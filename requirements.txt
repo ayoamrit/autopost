@@ -1,0 +1,5 @@
+firebase-admin
+google-generativeai
+Pillow
+requests
+python-dotenv
