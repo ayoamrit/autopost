@@ -3,4 +3,5 @@ __pycache__/
 *.pyc
 *.pyo
 venv/
-*.mp4
+output/
+service_account.json
