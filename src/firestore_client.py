@@ -17,7 +17,7 @@ def get_next_quote():
     for doc in docs:
         data = doc.to_dict()
         return{
-            id: doc.id,
+            "id": doc.id,
             "text": data.get("text"),
             "author": data.get("author"),
             "book": data.get("book")
