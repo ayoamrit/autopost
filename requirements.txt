@@ -3,3 +3,4 @@ google-generativeai
 httpx
 python-dotenv
 moviepy
+tiktok-uploader
