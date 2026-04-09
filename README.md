@@ -9,10 +9,10 @@ Each run executes a single, ordered pipeline:
 2. **Render:** draws the quote text and current date onto (`assets/template.mp4`) using Pillow + MoviePy.
 3. **Caption:** sends quote context to Gemini, parses a short caption and hashtags line from the response.
 4. **Upload:** posts the rendered video and caption to TikTok via cookie-authenticated automation.
-5. **Commit:** marks the quote as used in Firestore with a posted date, only after confirmed successful upload.
+5. **Commit:** marks the quote as used in Firestore with a posted date, only after a confirmed successful upload.
 6. **Cleanup:** deletes the local video file.
 
-Upload success is hard requirement before state is updated. A failed upload stops the pipeline early and no quote is ever marked used unless it was acutally posted.
+Upload success is a hard requirement before the state is updated. A failed upload stops the pipeline early, and no quote is ever marked used unless it was acutally posted.
 
 ---
 
@@ -47,7 +47,7 @@ autopost/
 ### 1. Clone and create a virtual environment
  
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/ayoamrit/autopost
 cd autopost
 python -m venv venv
 ```
@@ -103,7 +103,7 @@ Each run processes exactly one quote, generates one video, and posts one time. F
  
 ### The UI Ghost Problem
  
-During deployment, a significant automation bottleneck was discovered: TikTok's Creator Center intermittently injects asynchronous "Feature Announcement" modals immediately after a video payload is dropped into the uploader. These modals create a transparent but impermeable DOM layer over the description field and Post button, causing Playwright selectors to fail or hang with `TimeoutError`.
+During deployment, a significant automation bottleneck was discovered: TikTok's Creator Center intermittently injects asynchronous "Feature Announcement" modals immediately after a video payload is dropped into the uploader. These modals create a transparent but impermeable DOM layer over the description field and the Post button, causing Playwright selectors to fail or hang with `TimeoutError`.
  
 **Solution — Asynchronous UI Interception**
  
@@ -130,6 +130,6 @@ except Exception:
     logger.debug("UI Hotfix: No blocking elements detected. Proceeding...")
 ```
  
-If the modal is absent, the exception is swallowed silently and the pipeline continues with zero delay.
+If the modal is absent, the exception is swallowed silently, and the pipeline continues with zero delay.
  
 ---
