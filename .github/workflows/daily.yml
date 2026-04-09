@@ -1,0 +1,60 @@
+# .github/workflows/daily.yml
+# Runs the full TikTok quote automation process every day at 9: 00 AM UTC.
+
+name: Daily TikTok Quote Automation
+
+on:
+  schedule:
+    - cron: '0 9 * * *' # Runs every day at 9:00 AM UTC
+  workflow_dispatch: # Allows manual triggering of the workflow
+
+jobs:
+    post-quote:
+        runs-on: ubuntu-latest
+
+        steps:
+            # Step 1: Checkout the repository
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            # Step 2: Set up Python environment
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: '3.11'
+
+            # Step 3: Install dependencies
+            - name: Install dependencies
+              run: pip install -r requirements.txt
+
+            #Step 4: Install Playwright browser
+            - name: Install Playwright browser
+              run: playwright install chromium
+
+            #Step 5: Restore service account from GitHub secrets
+            - name: Restore service account file
+              env: 
+                GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+              run: echo "$GOOGLE_SERVICE_ACCOUNT_JSON" > service_account.json
+
+            #Step 6: Decrypt cookies.txt file
+            - name: Decrypt cookies file
+              run: |
+                gpg --quiet --batch --yes \
+                --passphrase "${{ secrets.COOKIES_PASSPHRASE}}" \
+                --output cookies.txt \
+                --decrypt cookies.txt.gpg
+
+            #Step 7: Create .env file from GitHub secrets
+            - name: Create .env file
+              run: |
+                echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+                echo "GOOGLE_APPLICATION_CREDENTIALS=service_account.json" >> .env
+            
+            #Step 8: Create output folder
+            - name: Create output directory
+              run: mkdir -p output
+
+            #Step 9: Run the pipeline script
+            - name: Run pipeline
+              run: python src/main.py
