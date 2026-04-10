@@ -19,6 +19,9 @@ Upload success is a hard requirement before the state is updated. A failed uploa
 ## Project Structure
 ```
 autopost/
+├── .github/
+│   └── workflows/
+│       └── daily.yml         # GitHub Actions: runs pipeline daily
 ├── assets/
 │   ├── template.mp4          # Base video template
 │   └── PALA.TTF              # Font for text overlays
@@ -29,6 +32,9 @@ autopost/
 │   ├── renderer.py           # Video rendering (MoviePy + Pillow)
 │   ├── llm_client.py         # Gemini caption generation
 │   └── tiktok_client.py      # TikTok upload automation
+├── cookies.txt.gpg           # Encrypted TikTok session (GPG)
+├── .env                      # Local secrets (never committed)
+├── .gitignore
 └── requirements.txt
 ```
 
@@ -76,8 +82,6 @@ Create a `.env` file in the project root:
 GOOGLE_APPLICATION_CREDENTIALS=service_account.json
 GEMINI_API_KEY=your_gemini_api_key
 GEMINI_MODEL=your_model_name
-TIKTOK_CLIENT_KEY=your_tiktok_client_key
-TIKTOK_CLIENT_SECRET=your_tiktok_client_secret
 ```
  
 ### 4. Add credential files
@@ -98,6 +102,44 @@ python src/main.py
 Each run processes exactly one quote, generates one video, and posts one time. Firestore tracks which quotes have been used, so re-running never produces duplicates.
  
 ---
+
+## GitHub Actions Setup
+ 
+The pipeline runs automatically every day at **9:00 AM UTC** via GitHub Actions.
+ 
+### 1. Encrypt your cookies file
+ 
+```bash
+gpg --symmetric --cipher-algo AES256 --batch --passphrase "your_passphrase" cookies.txt
+git add cookies.txt.gpg
+git commit -m "Add encrypted cookies"
+git push origin main
+```
+ 
+### 2. Add GitHub Secrets
+ 
+Go to **Settings → Secrets and variables → Actions** and add:
+ 
+| Secret | Value |
+|---|---|
+| `GEMINI_API_KEY` | Your Gemini API key |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | Contents of `service_account.json` |
+| `COOKIES_PASSPHRASE` | GPG passphrase used to encrypt cookies |
+| `GEMINI_MODEL` | Your Gemini model |
+ 
+### 3. Trigger manually
+ 
+Go to **Actions → Daily TikTok Quote Post → Run workflow** to test it anytime without waiting for the schedule.
+
+---
+
+## Notes
+ 
+- `cookies.txt` expires periodically, if uploads start failing, re-run the `tiktok-uploader --attach` step and re-encrypt the new file
+- The `tiktok_upload_patched.py` file is a modified version of `tiktok-uploader`'s `upload.py` that handles TikTok UI overlays automatically
+- All secrets are stored either in `.env` (local) or GitHub Secrets (CI)
+ 
+---
  
 ## Engineering Notes
  
@@ -105,7 +147,7 @@ Each run processes exactly one quote, generates one video, and posts one time. F
  
 During deployment, a significant automation bottleneck was discovered: TikTok's Creator Center intermittently injects asynchronous "Feature Announcement" modals immediately after a video payload is dropped into the uploader. These modals create a transparent but impermeable DOM layer over the description field and the Post button, causing Playwright selectors to fail or hang with `TimeoutError`.
  
-**Solution — Asynchronous UI Interception**
+**Solution: Asynchronous UI Interception**
  
 A zero-footprint hotfix was integrated directly into the `tiktok_uploader/upload.py` lifecycle. It acts as a UI janitor, proactively detecting and dismissing blocking overlays before the upload logic proceeds:
  
