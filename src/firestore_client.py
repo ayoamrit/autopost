@@ -35,10 +35,3 @@ def mark_quote_as_used(quote_id, date_posted):
         "date_posted": date_posted
     })
     
-# --- Temporary test code (we'll remove this later) ---
-if __name__ == "__main__":
-    quote = get_next_quote()
-    if quote:
-        print(f"✅ Connected! Got quote: '{quote['text']}' — {quote['author']} — {quote['book']}")
-    else:
-        print("⚠️ No unused quotes found.")

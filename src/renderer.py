@@ -1,12 +1,12 @@
+# Handle video creatiion by overlaying the quote text and date onto a template video.
+# The template is pre-made Canva video stored in the assets/ folder.
+# Pillow draws the text into a transparent image, which is then composited on top of the video using moviepy.
+
 import os
 import sys
 import numpy as np
-from datetime import date
 from PIL import Image, ImageDraw, ImageFont
-from dotenv import load_dotenv
 from moviepy import VideoFileClip, ImageClip, CompositeVideoClip
-
-load_dotenv()
 
 # Constants for file paths and font settings
 TEMPLATE_PATH = "assets/template.mp4"
@@ -54,6 +54,9 @@ def wrap_text(text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list[s
         
     return lines
 
+
+# Function to create the text overlay image with the quote and date.
+# Returns a nummpy array for MoviePy to use as an ImageClip.
 def make_overlay(video_w: int, video_h: int, quote: str, today: str) -> np.ndarray:
     img = Image.new("RGBA", (video_w, video_h), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
