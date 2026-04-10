@@ -32,7 +32,7 @@ jobs:
             # Replace the installed upload.py with our patched version that includes the fix.
             - name: Apply tiktok-uploader patch
               run: |
-                TIKTOK_PATCH=$(python -c "import tiktok_uploader; import os; print(os.patch.dirname(tiktok_uploader.__file__))")
+                TIKTOK_PATCH=$(python -c "import tiktok_uploader; import os; print(os.path.dirname(tiktok_uploader.__file__))")
                 cp src/tiktok_upload_patch.py $TIKTOK_PATCH/upload.py
 
             #Step 5: Install Playwright browser
