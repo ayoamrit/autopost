@@ -33,7 +33,7 @@ jobs:
             - name: Apply tiktok-uploader patch
               run: |
                 TIKTOK_PATCH=$(python -c "import tiktok_uploader; import os; print(os.path.dirname(tiktok_uploader.__file__))")
-                cp src/tiktok_upload_patch.py $TIKTOK_PATCH/upload.py
+                cp src/tiktok_upload_patched.py $TIKTOK_PATCH/upload.py
 
             #Step 5: Install Playwright browser
             - name: Install Playwright browser
