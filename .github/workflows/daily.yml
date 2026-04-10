@@ -27,17 +27,25 @@ jobs:
             - name: Install dependencies
               run: pip install -r requirements.txt
 
-            #Step 4: Install Playwright browser
+            # Step 4: Apply TikTok patch
+            # The library needs a fix to dismiss TikTok's tutorial overlay.
+            # Replace the installed upload.py with our patched version that includes the fix.
+            - name: Apply tiktok-uploader patch
+              run: |
+                TIKTOK_PATCH=$(python -c "import tiktok_uploader; import os; print(os.patch.dirname(tiktok_uploader.__file__))")
+                cp src/tiktok_upload_patch.py $TIKTOK_PATCH/upload.py
+
+            #Step 5: Install Playwright browser
             - name: Install Playwright browser
               run: playwright install chromium
 
-            #Step 5: Restore service account from GitHub secrets
+            #Step 6: Restore service account from GitHub secrets
             - name: Restore service account file
               env: 
                 GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
               run: echo "$GOOGLE_SERVICE_ACCOUNT_JSON" > service_account.json
 
-            #Step 6: Decrypt cookies.txt file
+            #Step 7: Decrypt cookies.txt file
             - name: Decrypt cookies file
               run: |
                 gpg --quiet --batch --yes \
@@ -45,17 +53,17 @@ jobs:
                 --output cookies.txt \
                 --decrypt cookies.txt.gpg
 
-            #Step 7: Create .env file from GitHub secrets
+            #Step 8: Create .env file from GitHub secrets
             - name: Create .env file
               run: |
                 echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
                 echo "GEMINI_MODEL=${{ secrets.GEMINI_MODEL }}" >> .env
                 echo "GOOGLE_APPLICATION_CREDENTIALS=service_account.json" >> .env
             
-            #Step 8: Create output folder
+            #Step 9: Create output folder
             - name: Create output directory
               run: mkdir -p output
 
-            #Step 9: Run the pipeline script
+            #Step 10: Run the pipeline script
             - name: Run pipeline
               run: python src/main.py
