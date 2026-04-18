@@ -18,6 +18,11 @@ Delivery success is a hard requirement before the state is updated. A failed del
 
 ---
 
+## Workflow
+![Workflow Diagram](assets/workflow_diagram.png)
+
+---
+
 ## Project Structure
 ```
 autopost/
