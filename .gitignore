@@ -5,4 +5,6 @@ __pycache__/
 venv/
 output/
 service_account.json
+drive_account.json
+token.json
 cookies.txt

@@ -59,6 +59,8 @@ jobs:
                 echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
                 echo "GEMINI_MODEL=${{ secrets.GEMINI_MODEL }}" >> .env
                 echo "GOOGLE_APPLICATION_CREDENTIALS=service_account.json" >> .env
+                echo "EMAIL_ADDRESS=${{ secrets.EMAIL_ADDRESS }}" >> .env
+                echo "EMAIL_APP_PASSWORD=${{ secrets.EMAIL_APP_PASSWORD }}" >> .env
             
             #Step 9: Create output folder
             - name: Create output directory
