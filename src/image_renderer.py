@@ -16,7 +16,7 @@ OUTPUT_DIR = "output"
 FONT_PATH = "assets/PALA.TTF"
 
 # Font settings
-FONT_SIZE = 24
+FONT_SIZE = 28
 
 # Text area settings
 TEXT_X = 108
@@ -25,7 +25,7 @@ TEXT_W = 864
 CENTER_X = TEXT_X + TEXT_W // 2
 
 # Background settings
-BG_SPREAD = 30
+BG_SPREAD = 20
 BG_COLOR = (0, 0, 0, 255)  # Solid black
 TEXT_COLOR = (255, 255, 255)  # White
 
@@ -150,4 +150,13 @@ def create_image(quote: dict, today: str) -> str:
     
     print(f"Image saved to: {output_path}")
     return output_path
+
+if __name__ == "__main__":
+    # Example usage
+    sample_quote = {
+        "text": "The soul is healed by being with children.The soul is healed by being with children.The soul is healed by being with children.The soul is healed by being with children.The soul is healed by being with children.The soul is healed by being with children.",
+        "author": "Fyodor Dostoevsky",
+        "book": "The Brothers Karamazov"
+    }
+    create_image(sample_quote, "January 1, 2024")
 
