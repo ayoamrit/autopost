@@ -21,7 +21,7 @@ SMTP_PORT = 587
 # Function to send an email with the quote image and caption:
 # - Body: the caption and hashtags
 # - Attachment: the generated quote image
-def send_email(image_path: str, caption: dict) -> bool:
+def send_email(image_path: str, caption: dict, remaining_count: int) -> bool:
     
     if not os.path.exists(image_path):
         print(f"Error: image file not found at {image_path}")
@@ -30,6 +30,14 @@ def send_email(image_path: str, caption: dict) -> bool:
     if not EMAIL_ADDRESS or not EMAIL_APP_PASSWORD:
         print("Error: EMAIL_ADDRESS and EMAIL_APP_PASSWORD must be set in the .env file.")
         return False
+    
+    # Determine the reminder message based on the remaining quote count
+    if remaining_count == 0:
+        reminder = "No more quotes left! Please add more quotes to the database."
+    elif remaining_count <= 5:
+        reminder = f"Only {remaining_count} quotes left! Consider adding more quotes to the database soon."
+    else:
+        reminder = f"{remaining_count} quotes remaining in the database."
     
     try:
         # Build the email message
@@ -41,7 +49,8 @@ def send_email(image_path: str, caption: dict) -> bool:
         # Email body with caption and hashtags
         body = (
             f"CAPTION:\n{caption['caption']}\n\n"
-            f"HASHTAGS:\n{caption['hashtags']}"
+            f"HASHTAGS:\n{caption['hashtags']}\n\n"
+            f"Database: {reminder}\n"
         )
         message.attach(MIMEText(body, "plain"))
         

@@ -1,3 +1,4 @@
+from google.cloud.firestore_v1.base_query import FieldFilter
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -35,3 +36,15 @@ def mark_quote_as_used(quote_id, date_posted):
         "date_posted": date_posted
     })
     
+    
+# Function to get the count of remaining unused quotes in the Firestore database
+# Returns an integer representing the number of unused quotes
+# Used in the dauly email as a reminder to top up the quote database when it runs low on quotes
+def get_remaining_count() -> int:
+    database = firestore.Client()
+    
+    docs = (
+        database.collection("quotes").where(filter=FieldFilter("used", "==", False)).stream()
+    )
+    
+    return sum (1 for _ in docs)

@@ -2,7 +2,7 @@ import os
 import sys
 from datetime import date
 from dotenv import load_dotenv
-from firestore_client import get_next_quote, mark_quote_as_used
+from firestore_client import get_next_quote, mark_quote_as_used, get_remaining_count
 from renderer import create_video
 from image_renderer import create_image
 from email_client import send_email
@@ -40,7 +40,8 @@ def run():
     
     # Step 4: Send the quote image and caption via email (email_client.py)
     print("Step 4: Sending the quote image and caption via email...")
-    email_success = send_email(image_path, caption_data)
+    remaining_quote_count = get_remaining_count()
+    email_success = send_email(image_path, caption_data, remaining_quote_count)
     
     if not email_success:
         print("Email failed to send. Quote will not be marked as used.")
