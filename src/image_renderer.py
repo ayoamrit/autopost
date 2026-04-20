@@ -151,12 +151,4 @@ def create_image(quote: dict, today: str) -> str:
     print(f"Image saved to: {output_path}")
     return output_path
 
-if __name__ == "__main__":
-    # Example usage
-    sample_quote = {
-        "text": "The soul is healed by being with children.The soul is healed by being with children.The soul is healed by being with children.The soul is healed by being with children.The soul is healed by being with children.The soul is healed by being with children.",
-        "author": "Fyodor Dostoevsky",
-        "book": "The Brothers Karamazov"
-    }
-    create_image(sample_quote, "January 1, 2024")
 

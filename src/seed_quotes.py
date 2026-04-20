@@ -9,7 +9,7 @@ load_dotenv()
 
 db = firestore.Client()
 
-quotes = [
+quotes_template = [
 
     # Template for adding new quotes
     {
@@ -20,6 +20,8 @@ quotes = [
         "date_posted": ""
     }
 ]
+
+quotes = []
 
 
 def seed():
