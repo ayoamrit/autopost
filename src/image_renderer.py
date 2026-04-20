@@ -9,6 +9,9 @@
 import os
 import sys
 from PIL import Image, ImageDraw, ImageFont
+from logger import get_logger
+
+log = get_logger(__name__)
 
 # File paths
 IMAGES_DIR = "assets/images"
@@ -38,14 +41,14 @@ def get_template_path(author: str) -> str:
     template_path = os.path.join(IMAGES_DIR, f"template_{safe_name}.png")
     
     if not os.path.exists(template_path):
-        print(f"Warning: Template for '{author}' not found. Using default template.")
+        log.warning("Warning: Template for '%s' not found. Using default template.", author)
         fallback_path = os.path.join(IMAGES_DIR, "template_default.png")
         
         if not os.path.exists(fallback_path):
-            print("Error: Default template not found. Please ensure 'template_default.png' exists in the images directory.")
+            log.error("Error: Default template not found. Please ensure 'template_default.png' exists in the images directory.")
             sys.exit(1)
         
-        print(f"Using fallback template: {fallback_path}")
+        log.info("Using fallback template: %s", fallback_path)
         return fallback_path
     
     return template_path
@@ -57,7 +60,7 @@ def load_font(size: int):
     try:
         return ImageFont.truetype(FONT_PATH, size)
     except IOError:
-        print(f"Error: could not load font at {FONT_PATH}. Loading default font instead.")
+        log.error("Error: could not load font at %s. Loading default font instead.", FONT_PATH)
         return ImageFont.load_default()
     
     
@@ -92,12 +95,12 @@ def create_image(quote: dict, today: str) -> str:
     
     # Get the template path for the quote's author, with fallback to default if not found.
     template_path = get_template_path(quote["author"])
-    print(f"Using template: {template_path}")
+    log.info("Using template: %s", template_path)
     
     # Load template as RGBA to composte transparent layers
     img = Image.open(template_path).convert("RGBA")
     W, H = img.size
-    print(f"Template loaded - size: {W}x{H}")
+    log.info("Template loaded - size: %sx%s", W, H)
     
     # Load font
     font = load_font(FONT_SIZE)
@@ -148,7 +151,7 @@ def create_image(quote: dict, today: str) -> str:
     output_path = os.path.join(OUTPUT_DIR, "quote_image.png")
     img.convert("RGB").save(output_path, "PNG")
     
-    print(f"Image saved to: {output_path}")
+    log.info("Image saved to: %s", output_path)
     return output_path
 
 

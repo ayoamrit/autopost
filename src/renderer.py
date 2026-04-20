@@ -7,6 +7,9 @@ import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from moviepy import VideoFileClip, ImageClip, CompositeVideoClip
+from logger import get_logger
+
+log = get_logger(__name__)
 
 # Constants for file paths and font settings
 TEMPLATE_PATH = "assets/template.mp4"
@@ -26,7 +29,7 @@ def load_font(size: int):
     try:
         return ImageFont.truetype(FONT_PATH, size)
     except IOError:
-        print(f"Error: could not load font at {FONT_PATH}. Loading default font instead.")
+        log.error("Error: could not load font at %s. Loading default font instead.", FONT_PATH)
         return ImageFont.load_default()
     
     
@@ -98,28 +101,28 @@ def create_video(quote: dict, today: str) -> str:
     os.makedirs(DOWNLOAD_DIR, exist_ok=True)
     
     if not os.path.exists(TEMPLATE_PATH):
-        print(f"Error: template video not found at {TEMPLATE_PATH}")
+        log.error("Error: template video not found at %s", TEMPLATE_PATH)
         sys.exit(1)
     
-    print("Loading template video...")
+    log.info("Loading template video...")
     clip = VideoFileClip(TEMPLATE_PATH)
     W, H = clip.size
-    print(f"Template video loaded with resolution {W}x{H}")
+    log.info("Template video loaded with resolution %s x %s", W, H)
     
-    print("Creating text overlay...")
+    log.info("Creating text overlay...")
     overlay_array = make_overlay(W, H, quote["text"], today)
     
     overlay_clip = (
         ImageClip(overlay_array).with_duration(clip.duration)
     )
     
-    print("Compositing final video...")
+    log.info("Compositing final video...")
     final_clip = CompositeVideoClip([clip, overlay_clip])
     output_path = os.path.join(DOWNLOAD_DIR, "quote_video.mp4")
     
-    print(f"Exporting video to {output_path}...")
+    log.info("Exporting video to %s...", output_path)
     final_clip.write_videofile(output_path, codec="libx264", audio_codec="aac", fps=clip.fps, logger=None)
     
     clip.close()
-    print("Video creation complete!")
+    log.info("Video creation complete!")
     return output_path

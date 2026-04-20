@@ -8,3 +8,5 @@ service_account.json
 drive_account.json
 token.json
 cookies.txt
+personal.txt
+pipeline.log

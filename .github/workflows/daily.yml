@@ -61,6 +61,7 @@ jobs:
                 echo "GOOGLE_APPLICATION_CREDENTIALS=service_account.json" >> .env
                 echo "EMAIL_ADDRESS=${{ secrets.EMAIL_ADDRESS }}" >> .env
                 echo "EMAIL_APP_PASSWORD=${{ secrets.EMAIL_APP_PASSWORD }}" >> .env
+                ehco "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> .env
             
             #Step 9: Create output folder
             - name: Create output directory

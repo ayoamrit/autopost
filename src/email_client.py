@@ -7,8 +7,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from dotenv import load_dotenv
+from logger import get_logger
 
 load_dotenv()
+log = get_logger(__name__)
 
 EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
 EMAIL_APP_PASSWORD = os.getenv("EMAIL_APP_PASSWORD")
@@ -24,11 +26,11 @@ SMTP_PORT = 587
 def send_email(image_path: str, caption: dict, remaining_count: int) -> bool:
     
     if not os.path.exists(image_path):
-        print(f"Error: image file not found at {image_path}")
+        log.error("Error: image file not found at %s", image_path)
         return False
     
     if not EMAIL_ADDRESS or not EMAIL_APP_PASSWORD:
-        print("Error: EMAIL_ADDRESS and EMAIL_APP_PASSWORD must be set in the .env file.")
+        log.error("Error: EMAIL_ADDRESS and EMAIL_APP_PASSWORD must be set in the .env file.")
         return False
     
     # Determine the reminder message based on the remaining quote count
@@ -61,7 +63,7 @@ def send_email(image_path: str, caption: dict, remaining_count: int) -> bool:
             message.attach(image_attachment)
             
         # Connect to the SMTP server and send the email
-        print(f"Sending email... {EMAIL_ADDRESS}")
+        log.info("Sending email to %s...", EMAIL_ADDRESS)
         
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
             server.ehlo()
@@ -69,11 +71,11 @@ def send_email(image_path: str, caption: dict, remaining_count: int) -> bool:
             server.login(EMAIL_ADDRESS, EMAIL_APP_PASSWORD)
             server.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, message.as_string())
 
-        print("Email sent successfully!")
+        log.info("Email sent successfully!")
         return True
     
     except Exception as e:
-        print(f"Error sending email: {e}")
+        log.error("Error sending email: %s", e)
         return False
 
 

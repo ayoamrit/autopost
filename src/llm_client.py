@@ -4,7 +4,10 @@
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+from logger import get_logger
+
 load_dotenv()
+log = get_logger(__name__)
 
 # Configure Gemini with credentials from .env file
 api_key = os.getenv("GEMINI_API_KEY")
@@ -52,15 +55,15 @@ def generate_caption(quote: dict) -> dict:
     # If parsing fails for any reason, use safe defaults so the pipeline can continue without interruption.
     # This way, something will still be posted even if the LLM response format changes or there's an issue with the model.
     if not caption:
-        print("⚠️ Warning: Could not parse caption from Gemini response. (Using fallback caption.)")
+        log.warning("⚠️ Warning: Could not parse caption from Gemini response. (Using fallback caption.)")
         caption = f"{quote['text']} - {quote['author']}"
         
     if not hashtags:
-        print("⚠️ Warning: Could not parse hashtags from Gemini response. (Using fallback hashtags.)")
+        log.warning("⚠️ Warning: Could not parse hashtags from Gemini response. (Using fallback hashtags.)")
         hashtags = "#quotes #dailyquotes #fyp #fyp #quoteoftheday"
     
-    print(f"Generated caption: {caption}")
-    print(f"Generated hashtags: {hashtags}")
+    log.info("Generated caption: %s", caption)
+    log.info("Generated hashtags: %s", hashtags)
     
     return{
         "caption": caption,

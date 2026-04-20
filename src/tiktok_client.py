@@ -1,5 +1,8 @@
 import os
 from tiktok_uploader.upload import upload_video
+from  logger import get_logger
+
+log = get_logger(__name__)
 
 COOKIES_PATH = "cookies.txt"
 
@@ -13,23 +16,23 @@ def upload_to_tiktok(video_path: str, caption: str) -> str:
     
     # Make sure the video file exists before attempting to upload
     if not os.path.exists(video_path):
-        print(f"Error: Video file not found at {video_path}")
+        log.error("Error: Video file not found at %s", video_path)
         return False
     
     # Make sure the cookies file exists before attempting to upload
     if not os.path.exists(COOKIES_PATH):
-        print(f"Error: TikTok cookies file not found at {COOKIES_PATH}")
+        log.error("Error: TikTok cookies file not found at %s", COOKIES_PATH)
         return False
     
-    print("Uploading video to TikTok...")
-    print(f"Video: {video_path}")
-    print(f"Caption: {caption}")
+    log.info("Uploading video to TikTok...")
+    log.info("Video: %s", video_path)
+    log.info("Caption: %s", caption)
     
     try:
         upload_video(filename=video_path, description=caption, cookies=COOKIES_PATH, headless=True)
-        print("Video uploaded successfully!")
+        log.info("Video uploaded successfully!")
         return True
     except Exception as e:
-        print(f"Error uploading video: {e}")
+        log.error("Error uploading video: %s", e)
         return False
     
