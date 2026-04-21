@@ -252,3 +252,13 @@ except Exception:
 If the modal is absent, the exception is swallowed silently, and the pipeline continues with zero delay.
 
 ---
+
+## Observability
+
+Error tracking and monitoring is handled by **Sentry**. Even unhandled exception acorss the pipeline is automatically captured with a full stack trace, environment context, and timestamp, alerting via email when something breaks in production.
+
+![Sentry Dashboard](assets/sentry_dashboard.png)
+
+Sentry is configured in `src/logger.py` and initialised once at import time. It automatically distinguishes between `local` and `github-actions` environments, making it easy to filter noise from development runs.
+
+---

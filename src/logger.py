@@ -15,6 +15,7 @@ sentry_sdk.init(
     # 100% of the transactions are tracked.
     traces_sample_rate = 1.0,
     environment = "github-actions" if os.getenv("GITHUB_ACTIONS") else "local",
+    send_default_pii = True
 )
 
 
