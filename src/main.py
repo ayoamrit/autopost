@@ -96,7 +96,7 @@ def run():
     #    log.error(" -> Fix the issue and run again.")
     #    sys.exit(1)
         
-        
+    
     # Step 5: Clean up video file
     # log.info("Step 5: Cleaning up video file...")
     # try:
